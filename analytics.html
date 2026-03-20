@@ -8,33 +8,78 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="app-container">
+    <div class="app-container analytics-layout">
         <!-- Navigation -->
         <nav class="top-nav">
             <a href="index.html">Wallet</a>
             <a href="analytics.html" class="active">Analytics</a>
         </nav>
 
-        <!-- Income Chart Section -->
-        <section class="transactions-section">
-            <div class="section-header">
-                <h2>Top Income Sources</h2>
-            </div>
-            <div style="width: 100%; height: 260px; position: relative;">
-                <canvas id="incomeCanvas"></canvas>
-            </div>
-        </section>
+        <div class="charts-grid-2-col">
+            <!-- Left Column: Income Details -->
+            <div class="column-wrapper">
+                <h2 class="col-header inc-header">Income Details</h2>
+                
+                <section class="transactions-section">
+                    <div class="section-header">
+                        <h2>Top Income Sources</h2>
+                    </div>
+                    <div style="width: 100%; height: 260px; position: relative;">
+                        <canvas id="incomeCanvas"></canvas>
+                    </div>
+                </section>
 
-        <!-- Expense Chart Section -->
-        <section class="transactions-section">
-            <div class="section-header">
-                <h2>Top Expenses</h2>
+                <section class="transactions-section">
+                    <div class="section-header">
+                        <h2>Income Trend</h2>
+                    </div>
+                    <div style="width: 100%; height: 260px; position: relative;">
+                        <canvas id="incomeTrendCanvas"></canvas>
+                    </div>
+                </section>
+
+                <section class="transactions-section">
+                    <div class="section-header">
+                        <h2>Income Distribution</h2>
+                    </div>
+                    <div style="width: 100%; height: 260px; position: relative;">
+                        <canvas id="incomeDoughnutCanvas"></canvas>
+                    </div>
+                </section>
             </div>
-            <div style="width: 100%; height: 260px; position: relative;">
-                <canvas id="expenseCanvas"></canvas>
+
+            <!-- Right Column: Expense Details -->
+            <div class="column-wrapper">
+                <h2 class="col-header exp-header">Expense Details</h2>
+                
+                <section class="transactions-section">
+                    <div class="section-header">
+                        <h2>Top Expenses</h2>
+                    </div>
+                    <div style="width: 100%; height: 260px; position: relative;">
+                        <canvas id="expenseCanvas"></canvas>
+                    </div>
+                </section>
+
+                <section class="transactions-section">
+                    <div class="section-header">
+                        <h2>Expense Trend</h2>
+                    </div>
+                    <div style="width: 100%; height: 260px; position: relative;">
+                        <canvas id="expenseTrendCanvas"></canvas>
+                    </div>
+                </section>
+
+                <section class="transactions-section">
+                    <div class="section-header">
+                        <h2>Expense Distribution</h2>
+                    </div>
+                    <div style="width: 100%; height: 260px; position: relative;">
+                        <canvas id="expenseDoughnutCanvas"></canvas>
+                    </div>
+                </section>
             </div>
-        </section>
-        
+        </div>
     </div>
 
     <!-- Chart.js Plugin -->

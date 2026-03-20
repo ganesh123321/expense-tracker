@@ -41,6 +41,39 @@ body {
     gap: 20px;
 }
 
+.analytics-layout {
+    max-width: 960px;
+}
+
+.charts-grid-2-col {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+    width: 100%;
+}
+
+.column-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.col-header {
+    text-align: center;
+    font-size: 1.3rem;
+    font-weight: 800;
+    margin-bottom: 5px;
+    letter-spacing: 0.5px;
+}
+.inc-header { color: var(--inc-color); }
+.exp-header { color: var(--exp-color); }
+
+@media (max-width: 768px) {
+    .charts-grid-2-col {
+        grid-template-columns: 1fr;
+    }
+}
+
 /* Nav */
 .top-nav {
     display: flex;
