@@ -15,70 +15,62 @@
             <a href="analytics.html" class="active">Analytics</a>
         </nav>
 
-        <div class="charts-grid-2-col">
-            <!-- Left Column: Income Details -->
-            <div class="column-wrapper">
-                <h2 class="col-header inc-header">Income Details</h2>
-                
-                <section class="transactions-section">
-                    <div class="section-header">
-                        <h2>Top Income Sources</h2>
-                    </div>
-                    <div style="width: 100%; height: 260px; position: relative;">
-                        <canvas id="incomeCanvas"></canvas>
-                    </div>
-                </section>
+        <div class="charts-matrix">
+            <!-- Row 1: Income Charts -->
+            <section class="transactions-section">
+                <div class="section-header">
+                    <h2>Top Income Sources</h2>
+                </div>
+                <div style="width: 100%; height: 260px; position: relative;">
+                    <canvas id="incomeCanvas"></canvas>
+                </div>
+            </section>
 
-                <section class="transactions-section">
-                    <div class="section-header">
-                        <h2>Income Trend</h2>
-                    </div>
-                    <div style="width: 100%; height: 260px; position: relative;">
-                        <canvas id="incomeTrendCanvas"></canvas>
-                    </div>
-                </section>
+            <section class="transactions-section">
+                <div class="section-header">
+                    <h2>Income Trend</h2>
+                </div>
+                <div style="width: 100%; height: 260px; position: relative;">
+                    <canvas id="incomeTrendCanvas"></canvas>
+                </div>
+            </section>
 
-                <section class="transactions-section">
-                    <div class="section-header">
-                        <h2>Income Distribution</h2>
-                    </div>
-                    <div style="width: 100%; height: 260px; position: relative;">
-                        <canvas id="incomeDoughnutCanvas"></canvas>
-                    </div>
-                </section>
-            </div>
+            <section class="transactions-section">
+                <div class="section-header">
+                    <h2>Income Distribution</h2>
+                </div>
+                <div style="width: 100%; height: 260px; position: relative;">
+                    <canvas id="incomeDoughnutCanvas"></canvas>
+                </div>
+            </section>
 
-            <!-- Right Column: Expense Details -->
-            <div class="column-wrapper">
-                <h2 class="col-header exp-header">Expense Details</h2>
-                
-                <section class="transactions-section">
-                    <div class="section-header">
-                        <h2>Top Expenses</h2>
-                    </div>
-                    <div style="width: 100%; height: 260px; position: relative;">
-                        <canvas id="expenseCanvas"></canvas>
-                    </div>
-                </section>
+            <!-- Row 2: Expense Charts -->
+            <section class="transactions-section">
+                <div class="section-header">
+                    <h2>Top Expenses</h2>
+                </div>
+                <div style="width: 100%; height: 260px; position: relative;">
+                    <canvas id="expenseCanvas"></canvas>
+                </div>
+            </section>
 
-                <section class="transactions-section">
-                    <div class="section-header">
-                        <h2>Expense Trend</h2>
-                    </div>
-                    <div style="width: 100%; height: 260px; position: relative;">
-                        <canvas id="expenseTrendCanvas"></canvas>
-                    </div>
-                </section>
+            <section class="transactions-section">
+                <div class="section-header">
+                    <h2>Expense Trend</h2>
+                </div>
+                <div style="width: 100%; height: 260px; position: relative;">
+                    <canvas id="expenseTrendCanvas"></canvas>
+                </div>
+            </section>
 
-                <section class="transactions-section">
-                    <div class="section-header">
-                        <h2>Expense Distribution</h2>
-                    </div>
-                    <div style="width: 100%; height: 260px; position: relative;">
-                        <canvas id="expenseDoughnutCanvas"></canvas>
-                    </div>
-                </section>
-            </div>
+            <section class="transactions-section">
+                <div class="section-header">
+                    <h2>Expense Distribution</h2>
+                </div>
+                <div style="width: 100%; height: 260px; position: relative;">
+                    <canvas id="expenseDoughnutCanvas"></canvas>
+                </div>
+            </section>
         </div>
     </div>
 
