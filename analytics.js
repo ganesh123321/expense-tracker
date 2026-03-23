@@ -58,15 +58,15 @@ function processAnalytics() {
 
     // Color palettes for Doughnut charts
     const incColors = ['#059669', '#10b981', '#34d399', '#6ee7b7', '#a7f3d0'];
-    const expColors = ['#b91c1c', '#ef4444', '#f87171', '#fca5a5', '#fecaca'];
+    const expColors = ['#C41230', '#F5A9A9', '#f87171', '#fca5a5', '#fecaca'];
 
     // Render Bar Charts
-    renderChart('bar', 'incomeCanvas', incomes, '#10b981', 'Total Income');
-    renderChart('bar', 'expenseCanvas', expenses, '#ef4444', 'Total Expense');
+    renderChart('bar', 'incomeCanvas', incomes, '#10B981', 'Total Income');
+    renderChart('bar', 'expenseCanvas', expenses, '#F5A9A9', 'Total Expense');
 
     // Render Line Charts (Trend)
-    renderChart('line', 'incomeTrendCanvas', incTrend, '#10b981', 'Income Trend');
-    renderChart('line', 'expenseTrendCanvas', expTrend, '#ef4444', 'Expense Trend');
+    renderChart('line', 'incomeTrendCanvas', incTrend, '#10B981', 'Income Trend');
+    renderChart('line', 'expenseTrendCanvas', expTrend, '#F5A9A9', 'Expense Trend');
 
     // Render Doughnut Charts (Distribution)
     // We reuse incomes and expenses but just pick top 5
@@ -82,7 +82,7 @@ function renderChart(type, canvasId, data, colorInfo, labelText) {
     if (data.length === 0) {
         new Chart(ctx, {
             type: 'bar',
-            data: { labels: ['No Data'], datasets: [{ data: [0], backgroundColor: '#e2e8f0' }] },
+            data: { labels: ['No Data'], datasets: [{ data: [0], backgroundColor: 'rgba(255,255,255,0.05)' }] },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
@@ -105,7 +105,7 @@ function renderChart(type, canvasId, data, colorInfo, labelText) {
             label: labelText,
             data: values,
             backgroundColor: colorInfo,
-            borderColor: type === 'line' ? colorInfo : (type === 'doughnut' ? '#fff' : 'transparent'),
+            borderColor: type === 'line' ? colorInfo : (type === 'doughnut' ? '#0F0303' : 'transparent'),
             borderWidth: type === 'doughnut' ? 2 : (type === 'line' ? 3 : 0),
             fill: type === 'line' ? {
                 target: 'origin',
@@ -127,7 +127,7 @@ function renderChart(type, canvasId, data, colorInfo, labelText) {
                 labels: { font: { family: 'Inter', size: 10 } }
             },
             tooltip: {
-                backgroundColor: '#102a43',
+                backgroundColor: '#0F0303',
                 padding: 12,
                 titleFont: { family: 'Inter', size: 13, weight: '500' },
                 bodyFont: { family: 'Inter', size: 14, weight: '700' },
@@ -145,10 +145,10 @@ function renderChart(type, canvasId, data, colorInfo, labelText) {
             y: {
                 beginAtZero: true,
                 border: { display: false },
-                grid: { color: '#f1f5f9' },
+                grid: { color: 'rgba(255,255,255,0.05)' },
                 ticks: {
                     callback: function(value) { return '₹' + formatNumber(value); },
-                    color: '#9fb3c8',
+                    color: '#8B949E',
                     font: { family: 'Inter', size: 10 }
                 }
             },
@@ -156,7 +156,7 @@ function renderChart(type, canvasId, data, colorInfo, labelText) {
                 grid: { display: false },
                 border: { display: false },
                 ticks: {
-                    color: '#627d98',
+                    color: '#8B949E',
                     font: { family: 'Inter', size: 11, weight: '500' }
                 }
             }

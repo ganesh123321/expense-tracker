@@ -124,7 +124,7 @@ function updateChart(income, expense) {
     const ctx = document.getElementById('expenseChart').getContext('2d');
     
     const dataValues = (income === 0 && expense === 0) ? [1] : [income, expense];
-    const bgColors = (income === 0 && expense === 0) ? ['#e2e8f0'] : ['#10b981', '#ef4444'];
+    const bgColors = (income === 0 && expense === 0) ? ['rgba(255,255,255,0.05)'] : ['#10B981', '#F5A9A9'];
     const labels = (income === 0 && expense === 0) ? ['No Data'] : ['Income', 'Expense'];
 
     if (expenseChartInstance) {
