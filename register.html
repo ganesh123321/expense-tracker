@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - Expense Tracker</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .auth-container {
+            max-width: 400px;
+            margin: 50px auto;
+            padding: 30px;
+            background: var(--card-bg, #fff); /* Fallback to white if var not defined */
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        .auth-container input {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            box-sizing: border-box;
+        }
+        .auth-container button {
+            width: 100%;
+            padding: 12px;
+            background-color: var(--primary-color, #4CAF50);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+        .auth-container button:hover {
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body>
+    <div class="auth-container">
+        <h2>Create an Account</h2>
+        <p>Join our secure Expense Tracker</p>
+        
+        <form id="registerForm">
+            <input type="email" id="email" placeholder="Email Address" required>
+            <input type="password" id="password" placeholder="Password" required>
+            <input type="password" id="confirmPassword" placeholder="Confirm Password" required>
+            <button type="submit">Register</button>
+        </form>
+        
+        <p style="margin-top: 15px;">
+            Already have an account? <a href="login.html">Login here</a>
+        </p>
+    </div>
+
+    <!-- Include the auth functions -->
+    <script src="auth.js"></script>
+    <script>
+        document.getElementById('registerForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            
+            if (password !== confirmPassword) {
+                alert("Passwords do not match!");
+                return;
+            }
+
+            // Call register function from auth.js
+            register(email, password);
+        });
+    </script>
+</body>
+</html>

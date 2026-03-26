@@ -1,3 +1,4 @@
+// Clean Refactored Javascript
 const balance = document.getElementById('balance');
 const money_plus = document.getElementById('money-plus');
 const money_minus = document.getElementById('money-minus');
@@ -5,102 +6,110 @@ const list = document.getElementById('list');
 const form = document.getElementById('form');
 const text = document.getElementById('text');
 const amount = document.getElementById('amount');
+const categoryInput = document.getElementById('category');
+const dateInput = document.getElementById('date');
+const searchInput = document.getElementById('searchInput');
 const filterBtns = document.querySelectorAll('.filter-btn');
 
-let expenseChartInstance = null;
-let currentFilter = 'all'; 
+const deleteModal = document.getElementById('deleteModal');
+const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
+const cancelDeleteBtn = document.getElementById('cancelDeleteBtn');
 
-// Local storage init & legacy dates migration wrapper
+let expensePieChartInstance = null;
+let spendingBarChartInstance = null;
+let currentFilter = 'all'; 
+let transactionToDelete = null;
+
 let transactions = JSON.parse(localStorage.getItem('transactions')) || [];
-transactions = transactions.map(t => {
-    if (!t.date) {
-        t.date = new Date().toISOString(); 
-    }
-    return t;
-});
+// Migrate old data
+transactions = transactions.map(t => ({
+    ...t,
+    category: t.category || 'Others',
+    date: t.date || new Date().toISOString().split('T')[0]
+}));
+
+function generateID() { return Math.floor(Math.random() * 10000000).toString(); }
+function formatNumber(num) { return Math.abs(num).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ","); }
+
+function showToast(message, isError = false) {
+    const container = document.getElementById('toast-container');
+    const toast = document.createElement('div');
+    toast.className = `px-6 py-3 rounded-lg text-white font-medium shadow-lg transition-opacity duration-300 ${isError ? 'bg-red-500' : 'bg-green-500'}`;
+    toast.innerText = message;
+    container.appendChild(toast);
+    setTimeout(() => toast.remove(), 2500);
+}
 
 function addTransaction(e) {
     e.preventDefault();
-    if (text.value.trim() === '' || amount.value.trim() === '') {
-        alert('Please specify an amount and description');
-        return;
-    }
-    
     const transaction = {
         id: generateID(),
         text: text.value.trim(),
         amount: parseFloat(amount.value),
-        date: new Date().toISOString()
+        category: categoryInput.value,
+        date: dateInput.value
     };
-
     transactions.push(transaction);
     updateLocalStorage();
     renderApp();
-    
-    text.value = '';
-    amount.value = '';
-    text.focus();
+    showToast('Transaction added successfully!');
+    text.value = ''; amount.value = ''; text.focus();
 }
 
-function generateID() {
-    return Math.floor(Math.random() * 100000000).toString();
-}
+window.initiateDelete = (id) => {
+    transactionToDelete = id;
+    deleteModal.classList.remove('hidden');
+};
 
-function formatDate(dateString) {
-    const options = { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' };
-    return new Date(dateString).toLocaleDateString('en-US', options);
-}
+const closeDeleteModal = () => {
+    transactionToDelete = null;
+    deleteModal.classList.add('hidden');
+};
 
-function formatNumber(num) {
-    const numStr = Math.abs(num).toFixed(2);
-    const parts = numStr.split('.');
-    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-    return parts.join('.');
-}
+const confirmDelete = () => {
+    if(!transactionToDelete) return;
+    transactions = transactions.filter(t => String(t.id) !== String(transactionToDelete));
+    updateLocalStorage();
+    renderApp();
+    showToast('Transaction deleted', true);
+    closeDeleteModal();
+};
 
 function renderList() {
     list.innerHTML = '';
+    const searchTerm = searchInput.value.toLowerCase();
     
-    let filtered = transactions;
-    if (currentFilter === 'income') {
-        filtered = transactions.filter(t => t.amount > 0);
-    } else if (currentFilter === 'expense') {
-        filtered = transactions.filter(t => t.amount < 0);
-    }
+    let filtered = transactions.filter(t => t.text.toLowerCase().includes(searchTerm));
+    if (currentFilter === 'income') filtered = filtered.filter(t => t.amount > 0);
+    else if (currentFilter === 'expense') filtered = filtered.filter(t => t.amount < 0);
+    else if (currentFilter.startsWith('cat-')) filtered = filtered.filter(t => t.category === currentFilter.replace('cat-', ''));
 
     if (filtered.length === 0) {
-        list.innerHTML = `
-            <div class="empty-state">
-                <ion-icon name="receipt-outline"></ion-icon>
-                <p>No transactions found</p>
-            </div>
-        `;
+        list.innerHTML = '<div class="text-center text-gray-400 py-6">No transactions found</div>';
         return;
     }
 
-    // Sort: newest first explicitly
     const sorted = [...filtered].sort((a, b) => new Date(b.date) - new Date(a.date));
-
-    sorted.forEach(transaction => {
-        const type = transaction.amount > 0 ? 'plus' : 'minus';
-        const sign = transaction.amount > 0 ? '+' : '-';
-        const iconName = transaction.amount > 0 ? 'arrow-down-outline' : 'arrow-up-outline';
-
+    sorted.forEach(t => {
+        const isInc = t.amount > 0;
+        const color = isInc ? 'text-inc' : 'text-exp';
+        const bg = isInc ? 'bg-green-50' : 'bg-red-50';
+        
         const li = document.createElement('li');
-        li.classList.add('transaction-item', type);
+        li.className = 'flex justify-between items-center p-3 border rounded-xl hover:shadow-sm transition group';
         li.innerHTML = `
-            <div class="t-icon">
-                <ion-icon name="${iconName}"></ion-icon>
+            <div class="flex items-center gap-3">
+                <div class="${bg} ${color} w-10 h-10 rounded-full flex items-center justify-center font-bold">
+                    ${t.category.substring(0,2).toUpperCase()}
+                </div>
+                <div>
+                    <p class="font-bold text-gray-800">${t.text}</p>
+                    <p class="text-xs text-gray-500">${t.category} • ${t.date}</p>
+                </div>
             </div>
-            <div class="t-details">
-                <div class="t-title">${transaction.text}</div>
-                <div class="t-date">${formatDate(transaction.date)}</div>
-            </div>
-            <div class="t-amount-wrapper">
-                <div class="t-amount">${sign}₹${formatNumber(transaction.amount)}</div>
-                <button class="delete-btn" onclick="removeTransaction('${transaction.id}', this)" title="Delete">
-                    <ion-icon name="close-outline"></ion-icon>
-                </button>
+            <div class="flex items-center gap-3">
+                <span class="font-bold ${color}">${isInc?'+':'-'}₹${formatNumber(t.amount)}</span>
+                <button onclick="initiateDelete('${t.id}')" class="text-red-500 opacity-0 group-hover:opacity-100 transition"><ion-icon name="trash"></ion-icon></button>
             </div>
         `;
         list.appendChild(li);
@@ -109,92 +118,85 @@ function renderList() {
 
 function updateValues() {
     const amounts = transactions.map(t => t.amount);
-    const total = amounts.reduce((acc, item) => (acc += item), 0);
-    const income = amounts.filter(item => item > 0).reduce((acc, item) => (acc += item), 0);
-    const expense = Math.abs(amounts.filter(item => item < 0).reduce((acc, item) => (acc += item), 0));
+    const total = amounts.reduce((acc, item) => acc += item, 0);
+    const income = amounts.filter(item => item > 0).reduce((acc, item) => acc += item, 0);
+    const exp = Math.abs(amounts.filter(item => item < 0).reduce((acc, item) => acc += item, 0));
 
-    balance.innerText = `${total < 0 ? '-' : ''}₹${formatNumber(total)}`;
+    balance.innerText = `₹${formatNumber(total)}`;
     money_plus.innerText = `+₹${formatNumber(income)}`;
-    money_minus.innerText = `-₹${formatNumber(expense)}`;
-
-    updateChart(income, expense);
+    money_minus.innerText = `-₹${formatNumber(exp)}`;
+    updateCharts();
 }
 
-function updateChart(income, expense) {
-    const ctx = document.getElementById('expenseChart').getContext('2d');
+function updateCharts() {
+    const expenses = transactions.filter(t => t.amount < 0);
     
-    const dataValues = (income === 0 && expense === 0) ? [1] : [income, expense];
-    const bgColors = (income === 0 && expense === 0) ? ['rgba(255,255,255,0.05)'] : ['#10B981', '#F5A9A9'];
-    const labels = (income === 0 && expense === 0) ? ['No Data'] : ['Income', 'Expense'];
+    // Pie Chart
+    const categories = {};
+    expenses.forEach(t => categories[t.category] = (categories[t.category] || 0) + Math.abs(t.amount));
+    const pLabels = Object.keys(categories).length ? Object.keys(categories) : ['No Data'];
+    const pData = Object.keys(categories).length ? Object.values(categories) : [1];
+    const pColors = Object.keys(categories).length ? ['#ef4444','#f97316','#eab308','#3b82f6','#8b5cf6','#64748b'] : ['#f3f4f6'];
 
-    if (expenseChartInstance) {
-        expenseChartInstance.data.datasets[0].data = dataValues;
-        expenseChartInstance.data.datasets[0].backgroundColor = bgColors;
-        expenseChartInstance.data.labels = labels;
-        expenseChartInstance.update();
-    } else {
-        expenseChartInstance = new Chart(ctx, {
-            type: 'doughnut', // Doughnut is more modern fintech compliant vs standard pie
-            data: {
-                labels: labels,
-                datasets: [{
-                    data: dataValues,
-                    backgroundColor: bgColors,
-                    borderWidth: 0,
-                    hoverOffset: 4
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                cutout: '75%',
-                plugins: {
-                    legend: { display: false },
-                    tooltip: {
-                        callbacks: {
-                            label: function(context) {
-                                if (context.label === 'No Data') return ' No entries yet';
-                                return ` ₹${formatNumber(context.raw)}`;
-                            }
-                        }
-                    }
-                }
-            }
+    const pCtx = document.getElementById('expensePieChart');
+    if (expensePieChartInstance) {
+        expensePieChartInstance.data.labels = pLabels;
+        expensePieChartInstance.data.datasets[0].data = pData;
+        expensePieChartInstance.data.datasets[0].backgroundColor = pColors;
+        expensePieChartInstance.update();
+    } else if(pCtx) {
+        expensePieChartInstance = new Chart(pCtx, {
+            type: 'pie',
+            data: { labels: pLabels, datasets: [{ data: pData, backgroundColor: pColors }] },
+            options: { responsive: true }
+        });
+    }
+
+    // Bar Chart
+    const months = {};
+    expenses.forEach(t => {
+        let m = new Date(t.date).toLocaleString('default', { month: 'short' });
+        months[m] = (months[m] || 0) + Math.abs(t.amount);
+    });
+    if(!Object.keys(months).length) months[new Date().toLocaleString('default', { month: 'short' })] = 0;
+
+    const bLabels = Object.keys(months);
+    const bData = Object.values(months);
+
+    const bCtx = document.getElementById('spendingBarChart');
+    if (spendingBarChartInstance) {
+        spendingBarChartInstance.data.labels = bLabels;
+        spendingBarChartInstance.data.datasets[0].data = bData;
+        spendingBarChartInstance.update();
+    } else if(bCtx) {
+        spendingBarChartInstance = new Chart(bCtx, {
+            type: 'bar',
+            data: { labels: bLabels, datasets: [{ label: 'Spent', data: bData, backgroundColor: '#3b82f6' }] },
+            options: { responsive: true, scales: { y: { beginAtZero: true } } }
         });
     }
 }
 
-// Global hook for onclick
-window.removeTransaction = function(id, btnElement) {
-    const li = btnElement.closest('.transaction-item');
-    li.classList.add('removing');
-    
-    // timeout aligns seamlessly with the CSS fadeOut animation
-    setTimeout(() => {
-        // Enforce string comparison for backwards compatibility with legacy localstorage instances
-        transactions = transactions.filter(t => String(t.id) !== String(id));
-        updateLocalStorage();
-        renderApp();
-    }, 250);
-}
+function updateLocalStorage() { localStorage.setItem('transactions', JSON.stringify(transactions)); }
 
-function updateLocalStorage() {
-    localStorage.setItem('transactions', JSON.stringify(transactions));
-}
+function renderApp() { renderList(); updateValues(); }
 
-function handleFilter(e) {
-    filterBtns.forEach(btn => btn.classList.remove('active'));
-    e.target.classList.add('active');
+// Listeners
+form.addEventListener('submit', addTransaction);
+searchInput.addEventListener('input', renderList);
+filterBtns.forEach(btn => btn.addEventListener('click', e => {
+    filterBtns.forEach(b => {
+        b.classList.remove('bg-blue-600', 'text-white');
+        b.classList.add('bg-gray-200');
+    });
+    e.target.classList.remove('bg-gray-200');
+    e.target.classList.add('bg-blue-600', 'text-white');
     currentFilter = e.target.dataset.filter;
     renderList();
-}
+}));
 
-filterBtns.forEach(btn => btn.addEventListener('click', handleFilter));
-form.addEventListener('submit', addTransaction);
+confirmDeleteBtn.addEventListener('click', confirmDelete);
+cancelDeleteBtn.addEventListener('click', closeDeleteModal);
 
-function renderApp() {
-    renderList();
-    updateValues();
-}
-
+dateInput.value = new Date().toISOString().split('T')[0];
 document.addEventListener('DOMContentLoaded', renderApp);

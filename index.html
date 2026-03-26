@@ -3,81 +3,96 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fintech Tracker</title>
+    <title>ExpenseTrackerPro</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: { colors: { inc: '#10b981', exp: '#ef4444' } }
+            }
+        }
+    </script>
 </head>
-<body>
-    <div class="app-container">
-        <!-- Navigation -->
-        <nav class="top-nav">
-            <a href="index.html" class="active">Wallet</a>
-            <a href="analytics.html">Analytics</a>
+<body class="bg-gray-50 text-gray-800 font-sans min-h-screen">
+    <div id="toast-container" class="fixed top-4 right-4 z-50 flex flex-col gap-2"></div>
+    <div class="max-w-7xl mx-auto px-4 py-8 flex flex-col gap-6">
+        <nav class="flex items-center justify-between bg-white px-6 py-4 rounded-xl shadow-sm border border-gray-100">
+            <div class="flex items-center gap-2">
+                <ion-icon name="wallet" class="text-blue-600 text-3xl"></ion-icon>
+                <h1 class="text-xl font-bold">ExpenseTracker<span class="text-blue-600">Pro</span></h1>
+            </div>
         </nav>
-        <!-- Header / Overview Section -->
-        <header class="overview-section">
-            <div class="balance-wrapper">
-                <p class="balance-label">Total Balance</p>
-                <h1 id="balance" class="balance-amount">₹0.00</h1>
-            </div>
-            <div class="summary-cards">
-                <div class="summary-card income">
-                    <div class="icon-wrapper"><ion-icon name="arrow-down-outline"></ion-icon></div>
-                    <div class="summary-info">
-                        <p>Income</p>
-                        <h3 id="money-plus">₹0.00</h3>
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div class="lg:col-span-2 flex flex-col gap-6">
+                <!-- Summary -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="bg-white p-6 rounded-2xl shadow-sm text-center transform transition hover:-translate-y-1">
+                        <p class="text-sm font-medium tracking-wide text-gray-500">Balance</p>
+                        <h2 id="balance" class="text-3xl font-bold text-gray-900">₹0.00</h2>
+                    </div>
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border-l-4 border-l-inc text-center transform transition hover:-translate-y-1">
+                        <p class="text-sm font-medium text-gray-500">Income</p>
+                        <h3 id="money-plus" class="text-2xl font-bold text-inc">₹0.00</h3>
+                    </div>
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border-l-4 border-l-exp text-center transform transition hover:-translate-y-1">
+                        <p class="text-sm font-medium text-gray-500">Expense</p>
+                        <h3 id="money-minus" class="text-2xl font-bold text-exp">₹0.00</h3>
                     </div>
                 </div>
-                <div class="summary-card expense">
-                    <div class="icon-wrapper"><ion-icon name="arrow-up-outline"></ion-icon></div>
-                    <div class="summary-info">
-                        <p>Expense</p>
-                        <h3 id="money-minus">₹0.00</h3>
-                    </div>
+                <!-- Charts -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-white p-6 rounded-2xl shadow-sm"><canvas id="expensePieChart"></canvas></div>
+                    <div class="bg-white p-6 rounded-2xl shadow-sm"><canvas id="spendingBarChart"></canvas></div>
                 </div>
+                <!-- Form -->
+                <section class="bg-white p-6 rounded-2xl shadow-sm">
+                    <h2 class="text-lg font-bold mb-4">Add Transaction</h2>
+                    <form id="form" class="flex flex-col gap-4">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <input type="text" id="text" class="px-4 py-2 border rounded-lg active:border-blue-500" placeholder="Description" required />
+                            <input type="number" id="amount" class="px-4 py-2 border rounded-lg" placeholder="Amount (- for exp)" step="0.01" required />
+                            <select id="category" class="px-4 py-2 border rounded-lg">
+                                <option value="Food">Food</option>
+                                <option value="Travel">Travel</option>
+                                <option value="Bills">Bills</option>
+                                <option value="Shopping">Shopping</option>
+                                <option value="Salary">Salary</option>
+                                <option value="Others">Others</option>
+                            </select>
+                            <input type="date" id="date" class="px-4 py-2 border rounded-lg" required />
+                        </div>
+                        <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 rounded-lg">Add</button>
+                    </form>
+                </section>
             </div>
-            <div class="chart-container">
-                <canvas id="expenseChart"></canvas>
-            </div>
-        </header>
-        <!-- Transactions Section -->
-        <section class="transactions-section">
-            <div class="section-header">
-                <h2>Transactions</h2>
-                <div class="filters">
-                    <button class="filter-btn active" data-filter="all">All</button>
-                    <button class="filter-btn" data-filter="income">Incomes</button>
-                    <button class="filter-btn" data-filter="expense">Expenses</button>
+            <!-- Transactions -->
+            <div class="bg-white p-6 rounded-2xl shadow-sm flex flex-col h-[700px]">
+                <h2 class="text-lg font-bold mb-4">Recent</h2>
+                <input type="text" id="searchInput" class="w-full px-4 py-2 border rounded-lg mb-4" placeholder="Search..."/>
+                <div class="flex flex-wrap gap-2 mb-4">
+                    <button class="filter-btn active bg-blue-600 text-white px-3 py-1 rounded-full text-xs" data-filter="all">All</button>
+                    <button class="filter-btn bg-gray-200 px-3 py-1 rounded-full text-xs" data-filter="income">Income</button>
+                    <button class="filter-btn bg-gray-200 px-3 py-1 rounded-full text-xs" data-filter="expense">Expense</button>
+                    <button class="filter-btn bg-gray-200 px-3 py-1 rounded-full text-xs" data-filter="cat-Food">Food</button>
+                    <button class="filter-btn bg-gray-200 px-3 py-1 rounded-full text-xs" data-filter="cat-Travel">Travel</button>
                 </div>
+                <ul id="list" class="flex flex-col gap-2 overflow-y-auto w-full"></ul>
             </div>
-            <ul id="list" class="transaction-list">
-                <!-- Transactions dynamically generated -->
-            </ul>
-        </section>
-        <!-- Add Transaction Form -->
-        <section class="add-transaction-section">
-            <h2>Add Record</h2>
-            <form id="form">
-                <div class="form-row">
-                    <div class="form-control flex-2">
-                        <label for="text">Description</label>
-                        <input type="text" id="text" placeholder="e.g. Salary, Rent" required autocomplete="off" />
-                    </div>
-                    <div class="form-control flex-1">
-                        <label for="amount">Amount</label>
-                        <input type="number" id="amount" placeholder="e.g. -500 or +1500" step="0.01" required autocomplete="off" />
-                    </div>
-                </div>
-                <button type="submit" class="btn submit-btn">
-                    <ion-icon name="add-circle-outline"></ion-icon> Add Transaction
-                </button>
-            </form>
-        </section>
+        </div>
     </div>
-
+    <!-- Modal -->
+    <div id="deleteModal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center">
+        <div class="bg-white p-6 rounded-2xl text-center">
+            <h3 class="text-lg font-bold mb-2">Delete?</h3>
+            <div class="flex justify-center gap-3 mt-4">
+                <button id="cancelDeleteBtn" class="px-4 py-2 bg-gray-200 rounded-lg text-black">Cancel</button>
+                <button id="confirmDeleteBtn" class="px-4 py-2 bg-red-500 rounded-lg text-white">Delete</button>
+            </div>
+        </div>
+    </div>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
-    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
     <script src="script.js"></script>
 </body>
 </html>
