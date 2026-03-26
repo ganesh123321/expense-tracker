@@ -9,11 +9,20 @@ const app = express();
 app.use(cors()); // Enable CORS for frontend integration
 app.use(express.json()); // Parse incoming JSON requests
 
-// Connect to MongoDB
-// Note: Ensure you have MongoDB installed and running locally, or replace with your MongoDB Atlas URI
-mongoose.connect('mongodb://127.0.0.1:27017/expenseDB')
-.then(() => console.log('✅ Connected to MongoDB (expenseDB)'))
-.catch((err) => console.error('❌ MongoDB Connection Error:', err));
+// Dynamically bootstrap a local MongoDB instance in-memory to prevent connection errors
+const { MongoMemoryServer } = require('mongodb-memory-server');
+
+(async () => {
+    try {
+        const mongoServer = await MongoMemoryServer.create();
+        const mongoUri = mongoServer.getUri();
+        
+        await mongoose.connect(mongoUri);
+        console.log('✅ Connected successfully to automated MongoDB (expenseDB) in-memory instance!');
+    } catch (err) {
+        console.error('❌ Error bootstrapping automated MongoDB:', err);
+    }
+})();
 
 // Routes
 const authRoutes = require('./routes/auth');
