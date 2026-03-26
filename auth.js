@@ -26,14 +26,19 @@ async function register(email, password) {
             alert(data.message || 'Registration failed');
         }
     } catch (error) {
-        console.error('Error during registration:', error);
+        console.warn('Backend server unreachable. Falling back to offline mode (localStorage).');
         
-        let msg = 'An error occurred. Please try again.';
-        if (window.location.hostname.includes('github.io') && API_URL.includes('localhost')) {
-            msg = 'Cannot connect to local backend from GitHub Pages!\n\nTo test this app with the backend, you MUST open the file locally on your computer (double-click register.html in your folder) instead of using the github.io link. Browsers block HTTP localhost connections from HTTPS websites!';
+        // --- OFFLINE / GITHUB PAGES FALLBACK ---
+        let users = JSON.parse(localStorage.getItem('mockUsers')) || [];
+        if (users.find(u => u.email === email)) {
+            alert('User already exists');
+            return;
         }
+        users.push({ email, password });
+        localStorage.setItem('mockUsers', JSON.stringify(users));
         
-        alert(msg);
+        alert('Registration successful! (Offline Mode)');
+        window.location.href = 'login.html';
     }
 }
 
@@ -65,14 +70,19 @@ async function login(email, password) {
             alert(data.message || 'Login failed');
         }
     } catch (error) {
-        console.error('Error during login:', error);
+        console.warn('Backend server unreachable. Falling back to offline mode (localStorage).');
         
-        let msg = 'An error occurred. Please try again.';
-        if (window.location.hostname.includes('github.io') && API_URL.includes('localhost')) {
-            msg = 'Cannot connect to local backend from GitHub Pages!\n\nTo test this app with the backend, you MUST open the file locally on your computer (double-click login.html in your folder) instead of using the github.io link. Browsers block HTTP localhost connections from HTTPS websites!';
+        // --- OFFLINE / GITHUB PAGES FALLBACK ---
+        let users = JSON.parse(localStorage.getItem('mockUsers')) || [];
+        const user = users.find(u => u.email === email && u.password === password);
+        
+        if (user) {
+            localStorage.setItem('token', 'offline-fake-jwt-token-' + email);
+            alert('Login successful! (Offline Mode)');
+            window.location.href = 'index.html';
+        } else {
+            alert('Invalid credentials (Offline Mode)');
         }
-        
-        alert(msg);
     }
 }
 
