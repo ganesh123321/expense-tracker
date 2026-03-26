@@ -27,7 +27,13 @@ async function register(email, password) {
         }
     } catch (error) {
         console.error('Error during registration:', error);
-        alert('An error occurred. Please try again.');
+        
+        let msg = 'An error occurred. Please try again.';
+        if (window.location.hostname.includes('github.io') && API_URL.includes('localhost')) {
+            msg = 'Cannot connect to local backend from GitHub Pages!\n\nTo test this app with the backend, you MUST open the file locally on your computer (double-click register.html in your folder) instead of using the github.io link. Browsers block HTTP localhost connections from HTTPS websites!';
+        }
+        
+        alert(msg);
     }
 }
 
@@ -60,7 +66,13 @@ async function login(email, password) {
         }
     } catch (error) {
         console.error('Error during login:', error);
-        alert('An error occurred. Please try again.');
+        
+        let msg = 'An error occurred. Please try again.';
+        if (window.location.hostname.includes('github.io') && API_URL.includes('localhost')) {
+            msg = 'Cannot connect to local backend from GitHub Pages!\n\nTo test this app with the backend, you MUST open the file locally on your computer (double-click login.html in your folder) instead of using the github.io link. Browsers block HTTP localhost connections from HTTPS websites!';
+        }
+        
+        alert(msg);
     }
 }
 
