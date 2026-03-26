@@ -3,58 +3,50 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Expense Tracker</title>
-    <link rel="stylesheet" href="style.css">
-    <style>
-        .auth-container {
-            max-width: 400px;
-            margin: 50px auto;
-            padding: 30px;
-            background: var(--card-bg, #fff); /* Fallback to white if var not defined */
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            text-align: center;
+    <title>Login - ExpenseTrackerPro</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: { colors: { inc: '#10b981', exp: '#ef4444' } }
+            }
         }
-        .auth-container input {
-            width: 100%;
-            padding: 12px;
-            margin: 10px 0;
-            border: 1px solid #ccc;
-            border-radius: 6px;
-            box-sizing: border-box;
-        }
-        .auth-container button {
-            width: 100%;
-            padding: 12px;
-            background-color: var(--primary-color, #4CAF50);
-            color: white;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 16px;
-            margin-top: 10px;
-        }
-        .auth-container button:hover {
-            opacity: 0.9;
-        }
-    </style>
+    </script>
 </head>
-<body>
-    <div class="auth-container">
-        <h2>Welcome Back</h2>
-        <p>Login to your Expense Tracker</p>
-        
-        <form id="loginForm">
-            <input type="email" id="email" placeholder="Email Address" required>
-            <input type="password" id="password" placeholder="Password" required>
-            <button type="submit">Login</button>
-        </form>
-        
-        <p style="margin-top: 15px;">
-            Don't have an account? <a href="register.html">Register here</a>
-        </p>
+<body class="bg-gray-50 text-gray-800 font-sans min-h-screen flex flex-col items-center justify-center p-4">
+    
+    <div class="max-w-md w-full flex flex-col gap-6">
+        <!-- Logo -->
+        <div class="flex items-center justify-center gap-2 mb-4">
+            <ion-icon name="wallet" class="text-blue-600 text-4xl"></ion-icon>
+            <h1 class="text-3xl font-bold">ExpenseTracker<span class="text-blue-600">Pro</span></h1>
+        </div>
+
+        <!-- Login Card -->
+        <section class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
+            <h2 class="text-2xl font-bold mb-2 text-center text-gray-900">Welcome Back</h2>
+            <p class="text-center text-gray-500 mb-8">Login to your expense tracker</p>
+            
+            <form id="loginForm" class="flex flex-col gap-5">
+                <div>
+                    <input type="email" id="email" class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors" placeholder="Email Address" required />
+                </div>
+                <div>
+                    <input type="password" id="password" class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors" placeholder="Password" required />
+                </div>
+                
+                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg mt-2 transition-colors">Login</button>
+            </form>
+            
+            <p class="mt-6 text-center text-gray-600">
+                Don't have an account? <a href="register.html" class="text-blue-600 font-semibold hover:underline">Register here</a>
+            </p>
+        </section>
     </div>
 
+    <!-- Ionicons for the wallet icon -->
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
     <!-- Include the auth functions -->
     <script src="auth.js"></script>
     <script>
