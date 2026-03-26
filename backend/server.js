@@ -11,10 +11,7 @@ app.use(express.json()); // Parse incoming JSON requests
 
 // Connect to MongoDB
 // Note: Ensure you have MongoDB installed and running locally, or replace with your MongoDB Atlas URI
-mongoose.connect('mongodb://127.0.0.1:27017/expenseDB', {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-})
+mongoose.connect('mongodb://127.0.0.1:27017/expenseDB')
 .then(() => console.log('✅ Connected to MongoDB (expenseDB)'))
 .catch((err) => console.error('❌ MongoDB Connection Error:', err));
 

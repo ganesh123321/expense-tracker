@@ -9,76 +9,118 @@
     <script>
         tailwind.config = {
             theme: {
-                extend: { colors: { inc: '#10b981', exp: '#ef4444' } }
+                extend: { 
+                    colors: { 
+                        inc: '#10b981', 
+                        exp: '#C21820',
+                        aquipt: {
+                            bg: '#0F0304',
+                            burgundy: '#3D0B0D',
+                            red: '#C21820',
+                            card: 'rgba(25, 15, 15, 0.6)'
+                        }
+                    } 
+                }
             }
         }
     </script>
+    <style>
+        body {
+            background: radial-gradient(circle at top left, #3D0B0D 0%, #0F0304 100%);
+            background-attachment: fixed;
+            color: #F9FAFB;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+        }
+        input, select {
+            background: rgba(0, 0, 0, 0.2) !important;
+            border-color: rgba(255, 255, 255, 0.1) !important;
+            color: white !important;
+        }
+        input:focus, select:focus {
+            border-color: #C21820 !important;
+            box-shadow: 0 0 0 2px rgba(194, 24, 32, 0.2) !important;
+            outline: none !important;
+        }
+        .filter-btn.active { background-color: #C21820 !important; color: white !important; }
+    </style>
 </head>
-<body class="bg-gray-50 text-gray-800 font-sans min-h-screen">
+<body class="font-sans min-h-screen">
     <div id="toast-container" class="fixed top-4 right-4 z-50 flex flex-col gap-2"></div>
     <div class="max-w-7xl mx-auto px-4 py-8 flex flex-col gap-6">
-        <nav class="flex items-center justify-between bg-white px-6 py-4 rounded-xl shadow-sm border border-gray-100">
+        <nav class="flex items-center justify-between glass-card px-6 py-4 rounded-3xl">
             <div class="flex items-center gap-2">
-                <ion-icon name="wallet" class="text-blue-600 text-3xl"></ion-icon>
-                <h1 class="text-xl font-bold">ExpenseTracker<span class="text-blue-600">Pro</span></h1>
+                <ion-icon name="wallet" class="text-aquipt-red text-3xl"></ion-icon>
+                <h1 class="text-xl font-bold">ExpenseTracker<span class="text-aquipt-red">Pro</span></h1>
             </div>
-            <button onclick="logout()" class="bg-red-50 text-red-600 hover:bg-red-100 px-4 py-2 rounded-lg font-bold text-sm transition-colors">Logout</button>
+            <button onclick="logout()" class="bg-aquipt-red hover:bg-red-800 text-white px-5 py-2 rounded-full font-bold text-sm transition-colors shadow-lg shadow-aquipt-red/30">Logout</button>
         </nav>
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div class="lg:col-span-2 flex flex-col gap-6">
                 <!-- Summary -->
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div class="bg-white p-6 rounded-2xl shadow-sm text-center transform transition hover:-translate-y-1">
-                        <p class="text-sm font-medium tracking-wide text-gray-500">Balance</p>
-                        <h2 id="balance" class="text-3xl font-bold text-gray-900">₹0.00</h2>
+                    <div class="glass-card p-6 rounded-3xl text-center transform transition hover:-translate-y-1">
+                        <p class="text-sm font-medium tracking-wide text-gray-400">Balance</p>
+                        <h2 id="balance" class="text-4xl font-extrabold text-white mt-1">₹0.00</h2>
                     </div>
-                    <div class="bg-white p-6 rounded-2xl shadow-sm border-l-4 border-l-inc text-center transform transition hover:-translate-y-1">
-                        <p class="text-sm font-medium text-gray-500">Income</p>
-                        <h3 id="money-plus" class="text-2xl font-bold text-inc">₹0.00</h3>
+                    <div class="glass-card p-6 rounded-3xl border-l-4 border-l-inc text-center transform transition hover:-translate-y-1">
+                        <p class="text-sm font-medium text-gray-400">Income</p>
+                        <h3 id="money-plus" class="text-2xl font-bold text-inc mt-1">₹0.00</h3>
                     </div>
-                    <div class="bg-white p-6 rounded-2xl shadow-sm border-l-4 border-l-exp text-center transform transition hover:-translate-y-1">
-                        <p class="text-sm font-medium text-gray-500">Expense</p>
-                        <h3 id="money-minus" class="text-2xl font-bold text-exp">₹0.00</h3>
+                    <div class="glass-card p-6 rounded-3xl border-l-4 border-l-exp text-center transform transition hover:-translate-y-1">
+                        <p class="text-sm font-medium text-gray-400">Expense</p>
+                        <h3 id="money-minus" class="text-2xl font-bold text-exp mt-1">₹0.00</h3>
                     </div>
                 </div>
                 <!-- Charts -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="bg-white p-6 rounded-2xl shadow-sm"><canvas id="expensePieChart"></canvas></div>
-                    <div class="bg-white p-6 rounded-2xl shadow-sm"><canvas id="spendingBarChart"></canvas></div>
+                    <div class="glass-card p-6 rounded-3xl"><canvas id="expensePieChart"></canvas></div>
+                    <div class="glass-card p-6 rounded-3xl"><canvas id="spendingBarChart"></canvas></div>
                 </div>
                 <!-- Form -->
-                <section class="bg-white p-6 rounded-2xl shadow-sm">
-                    <h2 class="text-lg font-bold mb-4">Add Transaction</h2>
-                    <form id="form" class="flex flex-col gap-4">
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <input type="text" id="text" class="px-4 py-2 border rounded-lg active:border-blue-500" placeholder="Description" required />
-                            <input type="number" id="amount" class="px-4 py-2 border rounded-lg" placeholder="Amount (- for exp)" step="0.01" required />
-                            <select id="category" class="px-4 py-2 border rounded-lg">
-                                <option value="Food">Food</option>
-                                <option value="Travel">Travel</option>
-                                <option value="Bills">Bills</option>
-                                <option value="Shopping">Shopping</option>
-                                <option value="Salary">Salary</option>
-                                <option value="Others">Others</option>
+                <section class="glass-card p-6 rounded-3xl">
+                    <h2 class="text-xl font-bold mb-5 text-white">Add Transaction</h2>
+                    <form id="form" class="flex flex-col gap-5">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                            <input type="text" id="text" class="px-5 py-3 border rounded-xl" placeholder="Description" required />
+                            <input type="number" id="amount" class="px-5 py-3 border rounded-xl" placeholder="Amount (- for exp)" step="0.01" required />
+                            <select id="category" class="px-5 py-3 border rounded-xl">
+                                <option value="Food" class="text-black">Food</option>
+                                <option value="Travel" class="text-black">Travel</option>
+                                <option value="Bills" class="text-black">Bills</option>
+                                <option value="Shopping" class="text-black">Shopping</option>
+                                <option value="Salary" class="text-black">Salary</option>
+                                <option value="Others" class="text-black">Others</option>
                             </select>
-                            <input type="date" id="date" class="px-4 py-2 border rounded-lg" required />
+                            <input type="date" id="date" class="px-5 py-3 border rounded-xl" required />
                         </div>
-                        <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 rounded-lg">Add</button>
+                        <button type="submit" class="bg-aquipt-red hover:bg-red-800 text-white font-bold py-3 rounded-xl shadow-[0_4px_15px_rgba(194,24,32,0.4)] transition-all transform hover:-translate-y-1">Add Transaction</button>
                     </form>
                 </section>
             </div>
             <!-- Transactions -->
-            <div class="bg-white p-6 rounded-2xl shadow-sm flex flex-col h-[700px]">
-                <h2 class="text-lg font-bold mb-4">Recent</h2>
-                <input type="text" id="searchInput" class="w-full px-4 py-2 border rounded-lg mb-4" placeholder="Search..."/>
-                <div class="flex flex-wrap gap-2 mb-4">
-                    <button class="filter-btn active bg-blue-600 text-white px-3 py-1 rounded-full text-xs" data-filter="all">All</button>
-                    <button class="filter-btn bg-gray-200 px-3 py-1 rounded-full text-xs" data-filter="income">Income</button>
-                    <button class="filter-btn bg-gray-200 px-3 py-1 rounded-full text-xs" data-filter="expense">Expense</button>
-                    <button class="filter-btn bg-gray-200 px-3 py-1 rounded-full text-xs" data-filter="cat-Food">Food</button>
-                    <button class="filter-btn bg-gray-200 px-3 py-1 rounded-full text-xs" data-filter="cat-Travel">Travel</button>
+            <!-- Transactions -->
+            <div class="glass-card p-6 rounded-3xl flex flex-col h-[700px]">
+                <h2 class="text-xl font-bold mb-4 text-white">Recent Transactions</h2>
+                <input type="text" id="searchInput" class="w-full px-5 py-3 border rounded-xl mb-5" placeholder="Search..."/>
+                <div class="flex flex-wrap gap-2 mb-5">
+                    <button class="filter-btn active bg-aquipt-red text-white px-4 py-1.5 rounded-full text-sm font-semibold transition" data-filter="all">All</button>
+                    <button class="filter-btn bg-white/10 hover:bg-white/20 text-gray-300 px-4 py-1.5 rounded-full text-sm font-semibold transition border border-white/5" data-filter="income">Income</button>
+                    <button class="filter-btn bg-white/10 hover:bg-white/20 text-gray-300 px-4 py-1.5 rounded-full text-sm font-semibold transition border border-white/5" data-filter="expense">Expense</button>
+                    <button class="filter-btn bg-white/10 hover:bg-white/20 text-gray-300 px-4 py-1.5 rounded-full text-sm font-semibold transition border border-white/5" data-filter="cat-Food">Food</button>
+                    <button class="filter-btn bg-white/10 hover:bg-white/20 text-gray-300 px-4 py-1.5 rounded-full text-sm font-semibold transition border border-white/5" data-filter="cat-Travel">Travel</button>
                 </div>
-                <ul id="list" class="flex flex-col gap-2 overflow-y-auto w-full"></ul>
+                <!-- Adding custom style for scrollbar -->
+                <style>
+                    #list::-webkit-scrollbar { width: 4px; }
+                    #list::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 4px; }
+                </style>
+                <ul id="list" class="flex flex-col gap-3 overflow-y-auto w-full pr-2"></ul>
             </div>
         </div>
     </div>
