@@ -58,15 +58,15 @@ function processAnalytics() {
 
     // Color palettes for Doughnut charts
     const incColors = ['#059669', '#10b981', '#34d399', '#6ee7b7', '#a7f3d0'];
-    const expColors = ['#C41230', '#F5A9A9', '#f87171', '#fca5a5', '#fecaca'];
+    const expColors = ['#8A0E15', '#C21820', '#E53E3E', '#F56565', '#FEB2B2'];
 
     // Render Bar Charts
     renderChart('bar', 'incomeCanvas', incomes, '#10B981', 'Total Income');
-    renderChart('bar', 'expenseCanvas', expenses, '#F5A9A9', 'Total Expense');
+    renderChart('bar', 'expenseCanvas', expenses, '#C21820', 'Total Expense');
 
     // Render Line Charts (Trend)
     renderChart('line', 'incomeTrendCanvas', incTrend, '#10B981', 'Income Trend');
-    renderChart('line', 'expenseTrendCanvas', expTrend, '#F5A9A9', 'Expense Trend');
+    renderChart('line', 'expenseTrendCanvas', expTrend, '#C21820', 'Expense Trend');
 
     // Render Doughnut Charts (Distribution)
     // We reuse incomes and expenses but just pick top 5

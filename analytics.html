@@ -3,79 +3,109 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Analytics - Fintech Tracker</title>
+    <title>Analytics - ExpenseTrackerPro</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=2">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: { 
+                    colors: { 
+                        inc: '#10b981', 
+                        exp: '#C21820',
+                        aquipt: {
+                            bg: '#0F0304',
+                            burgundy: '#3D0B0D',
+                            red: '#C21820'
+                        }
+                    } 
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background: radial-gradient(circle at top left, #3D0B0D 0%, #0F0304 100%);
+            background-attachment: fixed;
+            color: #F9FAFB;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+        }
+    </style>
 </head>
-<body>
-    <div class="app-container analytics-layout">
+<body class="font-sans min-h-screen">
+    
+    <div class="max-w-7xl mx-auto px-4 py-8 flex flex-col gap-6">
         <!-- Navigation -->
-        <nav class="top-nav">
-            <a href="index.html">Wallet</a>
-            <a href="analytics.html" class="active">Analytics</a>
+        <nav class="flex items-center justify-between glass-card px-6 py-4 rounded-3xl mb-4">
+            <div class="flex items-center gap-2">
+                <ion-icon name="analytics-outline" class="text-aquipt-red text-3xl"></ion-icon>
+                <h1 class="text-xl font-bold">Analytics<span class="text-aquipt-red">Pro</span></h1>
+            </div>
+            <div class="flex items-center gap-4">
+                <a href="index.html" class="text-gray-300 hover:text-white font-semibold transition-colors">Dashboard</a>
+                <button onclick="logout()" class="bg-aquipt-red hover:bg-red-800 text-white px-5 py-2 rounded-full font-bold text-sm transition-colors shadow-lg shadow-aquipt-red/30">Logout</button>
+            </div>
         </nav>
 
-        <div class="charts-matrix">
-            <!-- Row 1: Income Charts -->
-            <section class="transactions-section">
-                <div class="section-header">
-                    <h2>Top Income Sources</h2>
-                </div>
-                <div style="width: 100%; height: 260px; position: relative;">
+        <!-- 3x2 Grid for 6 Charts -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            
+            <!-- Row 1: Income Analysis -->
+            <section class="glass-card p-6 rounded-3xl flex flex-col items-center">
+                <h2 class="text-lg font-bold mb-4 text-white">Top Income Sources</h2>
+                <div class="w-full relative h-[300px]">
                     <canvas id="incomeCanvas"></canvas>
                 </div>
             </section>
-
-            <section class="transactions-section">
-                <div class="section-header">
-                    <h2>Income Trend</h2>
-                </div>
-                <div style="width: 100%; height: 260px; position: relative;">
+            
+            <section class="glass-card p-6 rounded-3xl flex flex-col items-center">
+                <h2 class="text-lg font-bold mb-4 text-white">Income Trend</h2>
+                <div class="w-full relative h-[300px]">
                     <canvas id="incomeTrendCanvas"></canvas>
                 </div>
             </section>
-
-            <section class="transactions-section">
-                <div class="section-header">
-                    <h2>Income Distribution</h2>
-                </div>
-                <div style="width: 100%; height: 260px; position: relative;">
+            
+            <section class="glass-card p-6 rounded-3xl flex flex-col items-center">
+                <h2 class="text-lg font-bold mb-4 text-white">Income Distribution</h2>
+                <div class="w-full relative h-[300px]">
                     <canvas id="incomeDoughnutCanvas"></canvas>
                 </div>
             </section>
 
-            <!-- Row 2: Expense Charts -->
-            <section class="transactions-section">
-                <div class="section-header">
-                    <h2>Top Expenses</h2>
-                </div>
-                <div style="width: 100%; height: 260px; position: relative;">
+            <!-- Row 2: Expense Analysis -->
+            <section class="glass-card p-6 rounded-3xl flex flex-col items-center">
+                <h2 class="text-lg font-bold mb-4 text-white">Top Expenses</h2>
+                <div class="w-full relative h-[300px]">
                     <canvas id="expenseCanvas"></canvas>
                 </div>
             </section>
-
-            <section class="transactions-section">
-                <div class="section-header">
-                    <h2>Expense Trend</h2>
-                </div>
-                <div style="width: 100%; height: 260px; position: relative;">
+            
+            <section class="glass-card p-6 rounded-3xl flex flex-col items-center">
+                <h2 class="text-lg font-bold mb-4 text-white">Expense Trend</h2>
+                <div class="w-full relative h-[300px]">
                     <canvas id="expenseTrendCanvas"></canvas>
                 </div>
             </section>
-
-            <section class="transactions-section">
-                <div class="section-header">
-                    <h2>Expense Distribution</h2>
-                </div>
-                <div style="width: 100%; height: 260px; position: relative;">
+            
+            <section class="glass-card p-6 rounded-3xl flex flex-col items-center">
+                <h2 class="text-lg font-bold mb-4 text-white">Expense Distribution</h2>
+                <div class="w-full relative h-[300px]">
                     <canvas id="expenseDoughnutCanvas"></canvas>
                 </div>
             </section>
+
         </div>
     </div>
 
-    <!-- Chart.js Plugin -->
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="analytics.js?v=2"></script>
+    <script src="auth.js"></script>
+    <script src="analytics.js"></script>
 </body>
 </html>
