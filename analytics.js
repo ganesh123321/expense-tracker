@@ -1,4 +1,21 @@
 let transactions = JSON.parse(localStorage.getItem('transactions')) || [];
+let chartInstances = {};
+
+function getFilteredData() {
+    const timeFilter = localStorage.getItem('timeFilter') || '30';
+    if (timeFilter === 'all') return transactions;
+    const now = new Date();
+    let pastDate = new Date();
+    pastDate.setHours(0,0,0,0);
+    if (timeFilter === '30') {
+        pastDate.setDate(now.getDate() - 30);
+    } else if (timeFilter === '180') {
+        pastDate.setDate(now.getDate() - 180);
+    } else if (timeFilter === '365') {
+        pastDate.setDate(now.getDate() - 365);
+    }
+    return transactions.filter(t => new Date(t.date) >= pastDate);
+}
 
 function formatNumber(num) {
     const numStr = Math.abs(num).toFixed(2);
@@ -13,7 +30,9 @@ function processAnalytics() {
     const incTrendMap = {};
     const expTrendMap = {};
 
-    transactions.forEach(t => {
+    const activeData = getFilteredData();
+
+    activeData.forEach(t => {
         const text = t.text.trim().toLowerCase();
         // Capitalize for grouping
         const displayName = text.charAt(0).toUpperCase() + text.slice(1);
@@ -79,8 +98,13 @@ function renderChart(type, canvasId, data, colorInfo, labelText) {
     if(!canvas) return;
     const ctx = canvas.getContext('2d');
     
+    if (chartInstances[canvasId]) {
+        chartInstances[canvasId].destroy();
+        chartInstances[canvasId] = null;
+    }
+    
     if (data.length === 0) {
-        new Chart(ctx, {
+        chartInstances[canvasId] = new Chart(ctx, {
             type: 'bar',
             data: { labels: ['No Data'], datasets: [{ data: [0], backgroundColor: 'rgba(255,255,255,0.05)' }] },
             options: {
@@ -163,7 +187,7 @@ function renderChart(type, canvasId, data, colorInfo, labelText) {
         };
     }
 
-    new Chart(ctx, {
+    chartInstances[canvasId] = new Chart(ctx, {
         type: type,
         data: chartData,
         options: chartOpts
@@ -171,4 +195,14 @@ function renderChart(type, canvasId, data, colorInfo, labelText) {
 }
 
 // Start processing on load
-document.addEventListener('DOMContentLoaded', processAnalytics);
+document.addEventListener('DOMContentLoaded', () => {
+    const timeFilterSelect = document.getElementById('timeFilter');
+    if (timeFilterSelect) {
+        timeFilterSelect.value = localStorage.getItem('timeFilter') || '30';
+        timeFilterSelect.addEventListener('change', (e) => {
+            localStorage.setItem('timeFilter', e.target.value);
+            processAnalytics();
+        });
+    }
+    processAnalytics();
+});

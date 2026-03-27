@@ -32,6 +32,23 @@ transactions = transactions.map(t => ({
     date: t.date || new Date().toISOString().split('T')[0]
 }));
 
+function getFilteredData() {
+    const timeFilter = localStorage.getItem('timeFilter') || '30';
+    if (timeFilter === 'all') return transactions;
+    const now = new Date();
+    let pastDate = new Date();
+    pastDate.setHours(0,0,0,0);
+    if (timeFilter === '30') {
+        pastDate.setDate(now.getDate() - 30);
+    } else if (timeFilter === '180') {
+        pastDate.setDate(now.getDate() - 180);
+    } else if (timeFilter === '365') {
+        pastDate.setDate(now.getDate() - 365);
+    }
+    // Filter by comparing dates
+    return transactions.filter(t => new Date(t.date) >= pastDate);
+}
+
 function generateID() { return Math.floor(Math.random() * 10000000).toString(); }
 function formatNumber(num) { return Math.abs(num).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ","); }
 
@@ -83,7 +100,7 @@ function renderList() {
     list.innerHTML = '';
     const searchTerm = searchInput.value.toLowerCase();
     
-    let filtered = transactions.filter(t => t.text.toLowerCase().includes(searchTerm));
+    let filtered = getFilteredData().filter(t => t.text.toLowerCase().includes(searchTerm));
     if (currentFilter === 'income') filtered = filtered.filter(t => t.amount > 0);
     else if (currentFilter === 'expense') filtered = filtered.filter(t => t.amount < 0);
     else if (currentFilter.startsWith('cat-')) filtered = filtered.filter(t => t.category === currentFilter.replace('cat-', ''));
@@ -121,7 +138,7 @@ function renderList() {
 }
 
 function updateValues() {
-    const amounts = transactions.map(t => t.amount);
+    const amounts = getFilteredData().map(t => t.amount);
     const total = amounts.reduce((acc, item) => acc += item, 0);
     const income = amounts.filter(item => item > 0).reduce((acc, item) => acc += item, 0);
     const exp = Math.abs(amounts.filter(item => item < 0).reduce((acc, item) => acc += item, 0));
@@ -133,7 +150,7 @@ function updateValues() {
 }
 
 function updateCharts() {
-    const expenses = transactions.filter(t => t.amount < 0);
+    const expenses = getFilteredData().filter(t => t.amount < 0);
     
     // Pie Chart
     const categories = {};
@@ -201,6 +218,15 @@ filterBtns.forEach(btn => btn.addEventListener('click', e => {
 
 confirmDeleteBtn.addEventListener('click', confirmDelete);
 cancelDeleteBtn.addEventListener('click', closeDeleteModal);
+
+const timeFilterSelect = document.getElementById('timeFilter');
+if (timeFilterSelect) {
+    timeFilterSelect.value = localStorage.getItem('timeFilter') || '30';
+    timeFilterSelect.addEventListener('change', (e) => {
+        localStorage.setItem('timeFilter', e.target.value);
+        renderApp();
+    });
+}
 
 dateInput.value = new Date().toISOString().split('T')[0];
 document.addEventListener('DOMContentLoaded', renderApp);
