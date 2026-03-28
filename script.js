@@ -143,7 +143,8 @@ function updateValues() {
     const income = amounts.filter(item => item > 0).reduce((acc, item) => acc += item, 0);
     const exp = Math.abs(amounts.filter(item => item < 0).reduce((acc, item) => acc += item, 0));
 
-    balance.innerText = `₹${formatNumber(total)}`;
+    const sign = total < 0 ? '-' : '';
+    balance.innerText = `${sign}₹${formatNumber(total)}`;
     money_plus.innerText = `+₹${formatNumber(income)}`;
     money_minus.innerText = `-₹${formatNumber(exp)}`;
     updateCharts();
