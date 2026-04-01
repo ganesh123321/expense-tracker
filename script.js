@@ -33,13 +33,14 @@ transactions = transactions.map(t => ({
 }));
 
 function getFilteredData() {
-    const timeFilter = localStorage.getItem('timeFilter') || '30';
+    let timeFilter = localStorage.getItem('timeFilter') || 'month';
+    if (timeFilter === '30') timeFilter = 'month';
     if (timeFilter === 'all') return transactions;
     const now = new Date();
     let pastDate = new Date();
     pastDate.setHours(0,0,0,0);
-    if (timeFilter === '30') {
-        pastDate.setDate(now.getDate() - 30);
+    if (timeFilter === 'month') {
+        pastDate = new Date(now.getFullYear(), now.getMonth(), 1);
     } else if (timeFilter === '180') {
         pastDate.setDate(now.getDate() - 180);
     } else if (timeFilter === '365') {
@@ -222,7 +223,9 @@ cancelDeleteBtn.addEventListener('click', closeDeleteModal);
 
 const timeFilterSelect = document.getElementById('timeFilter');
 if (timeFilterSelect) {
-    timeFilterSelect.value = localStorage.getItem('timeFilter') || '30';
+    let savedFilter = localStorage.getItem('timeFilter') || 'month';
+    if (savedFilter === '30') savedFilter = 'month';
+    timeFilterSelect.value = savedFilter;
     timeFilterSelect.addEventListener('change', (e) => {
         localStorage.setItem('timeFilter', e.target.value);
         renderApp();
