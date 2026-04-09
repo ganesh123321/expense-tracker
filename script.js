@@ -24,13 +24,23 @@ let spendingBarChartInstance = null;
 let currentFilter = 'all'; 
 let transactionToDelete = null;
 
-let transactions = JSON.parse(localStorage.getItem('transactions')) || [];
-// Migrate old data
-transactions = transactions.map(t => ({
-    ...t,
-    category: t.category || 'Others',
-    date: t.date || new Date().toISOString().split('T')[0]
-}));
+let transactions = [];
+
+async function fetchTransactions() {
+    const token = localStorage.getItem('token');
+    if (!token) return;
+    try {
+        const res = await fetch('http://localhost:8000/api/v1/transactions/', {
+            headers: { 'Authorization': 'Bearer ' + token }
+        });
+        if (res.ok) {
+            transactions = await res.json();
+            renderApp();
+        }
+    } catch (e) {
+        console.error('Failed to fetch transactions', e);
+    }
+}
 
 function getFilteredData() {
     let timeFilter = localStorage.getItem('timeFilter') || 'month';
@@ -62,20 +72,36 @@ function showToast(message, isError = false) {
     setTimeout(() => toast.remove(), 2500);
 }
 
-function addTransaction(e) {
+async function addTransaction(e) {
     e.preventDefault();
+    const token = localStorage.getItem('token');
     const transaction = {
-        id: generateID(),
         text: text.value.trim(),
         amount: parseFloat(amount.value),
         category: categoryInput.value,
         date: dateInput.value
     };
-    transactions.push(transaction);
-    updateLocalStorage();
-    renderApp();
-    showToast('Transaction added successfully!');
-    text.value = ''; amount.value = ''; text.focus();
+    try {
+        const res = await fetch('http://localhost:8000/api/v1/transactions/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + token
+            },
+            body: JSON.stringify(transaction)
+        });
+        if (res.ok) {
+            const added = await res.json();
+            transactions.push(added);
+            renderApp();
+            showToast('Transaction added successfully!');
+            text.value = ''; amount.value = ''; text.focus();
+        } else {
+            showToast('Failed to add transaction', true);
+        }
+    } catch (e) {
+        console.error('Failed to save transaction', e);
+    }
 }
 
 window.initiateDelete = (id) => {
@@ -88,13 +114,25 @@ const closeDeleteModal = () => {
     deleteModal.classList.add('hidden');
 };
 
-const confirmDelete = () => {
+const confirmDelete = async () => {
     if(!transactionToDelete) return;
-    transactions = transactions.filter(t => String(t.id) !== String(transactionToDelete));
-    updateLocalStorage();
-    renderApp();
-    showToast('Transaction deleted', true);
-    closeDeleteModal();
+    const token = localStorage.getItem('token');
+    try {
+        const res = await fetch(`http://localhost:8000/api/v1/transactions/${transactionToDelete}`, {
+            method: 'DELETE',
+            headers: { 'Authorization': 'Bearer ' + token }
+        });
+        if (res.ok) {
+            transactions = transactions.filter(t => String(t.id) !== String(transactionToDelete));
+            renderApp();
+            showToast('Transaction deleted', true);
+            closeDeleteModal();
+        } else {
+            showToast('Failed to delete', true);
+        }
+    } catch(e) {
+        console.error('Failed to delete transaction', e);
+    }
 };
 
 function renderList() {
@@ -200,7 +238,7 @@ function updateCharts() {
     }
 }
 
-function updateLocalStorage() { localStorage.setItem('transactions', JSON.stringify(transactions)); }
+function updateLocalStorage() { /* Defer to DB */ }
 
 function renderApp() { renderList(); updateValues(); }
 
@@ -233,4 +271,4 @@ if (timeFilterSelect) {
 }
 
 dateInput.value = new Date().toISOString().split('T')[0];
-document.addEventListener('DOMContentLoaded', renderApp);
+document.addEventListener('DOMContentLoaded', fetchTransactions);

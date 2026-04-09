@@ -1,5 +1,24 @@
-let transactions = JSON.parse(localStorage.getItem('transactions')) || [];
+let transactions = [];
 let chartInstances = {};
+
+async function fetchTransactions() {
+    const token = localStorage.getItem('token');
+    if (!token) {
+        window.location.href = 'login.html';
+        return;
+    }
+    try {
+        const res = await fetch('http://localhost:8000/api/v1/transactions/', {
+            headers: { 'Authorization': 'Bearer ' + token }
+        });
+        if (res.ok) {
+            transactions = await res.json();
+            processAnalytics();
+        }
+    } catch (e) {
+        console.error('Failed to fetch transactions', e);
+    }
+}
 
 function getFilteredData() {
     let timeFilter = localStorage.getItem('timeFilter') || 'month';
@@ -207,5 +226,5 @@ document.addEventListener('DOMContentLoaded', () => {
             processAnalytics();
         });
     }
-    processAnalytics();
+    fetchTransactions();
 });
