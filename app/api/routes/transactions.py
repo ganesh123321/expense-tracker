@@ -34,7 +34,7 @@ async def create_transaction(
         date=transaction_in.date
     )
     db.add(transaction)
-    await db.flush()
+    await db.commit()
     await db.refresh(transaction)
     return transaction
 
@@ -49,4 +49,4 @@ async def delete_transaction(
     if not transaction:
         raise HTTPException(status_code=404, detail="Transaction not found")
     await db.delete(transaction)
-    await db.flush()
+    await db.commit()

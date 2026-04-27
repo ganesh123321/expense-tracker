@@ -32,7 +32,7 @@ class UserService:
             hashed_password=get_password_hash(user_in.password),
         )
         db.add(user)
-        await db.flush()
+        await db.commit()
         await db.refresh(user)
         return user
 
@@ -41,7 +41,7 @@ class UserService:
         update_data = user_in.model_dump(exclude_unset=True)
         for field, value in update_data.items():
             setattr(user, field, value)
-        await db.flush()
+        await db.commit()
         await db.refresh(user)
         return user
 
@@ -55,5 +55,5 @@ class UserService:
     @staticmethod
     async def deactivate(db: AsyncSession, user: User) -> User:
         user.is_active = False
-        await db.flush()
+        await db.commit()
         return user
