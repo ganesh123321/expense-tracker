@@ -93,7 +93,11 @@
                     <form id="form" class="flex flex-col gap-5">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                             <input type="text" id="text" class="px-5 py-3 border rounded-xl" placeholder="Description" required />
-                            <input type="number" id="amount" class="px-5 py-3 border rounded-xl" placeholder="Amount (- for exp)" step="0.01" required />
+                            <select id="type" class="px-5 py-3 border rounded-xl">
+                                <option value="expense" class="text-black">Expense (-)</option>
+                                <option value="income" class="text-black">Income (+)</option>
+                            </select>
+                            <input type="number" id="amount" class="px-5 py-3 border rounded-xl" placeholder="Amount" step="0.01" required />
                             <select id="category" class="px-5 py-3 border rounded-xl">
                                 <option value="Food" class="text-black">Food</option>
                                 <option value="Travel" class="text-black">Travel</option>

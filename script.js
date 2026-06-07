@@ -56,8 +56,8 @@ function getFilteredData() {
     } else if (timeFilter === '365') {
         pastDate.setDate(now.getDate() - 365);
     }
-    // Filter by comparing dates
-    return transactions.filter(t => new Date(t.date) >= pastDate);
+    // Filter by comparing dates in local timezone
+    return transactions.filter(t => new Date(t.date.replace(/-/g, '/')) >= pastDate);
 }
 
 function generateID() { return Math.floor(Math.random() * 10000000).toString(); }
@@ -75,9 +75,12 @@ function showToast(message, isError = false) {
 async function addTransaction(e) {
     e.preventDefault();
     const token = localStorage.getItem('token');
+    const type = document.getElementById('type').value;
+    const rawAmount = parseFloat(amount.value);
+    const signedAmount = type === 'expense' ? -Math.abs(rawAmount) : Math.abs(rawAmount);
     const transaction = {
         text: text.value.trim(),
-        amount: parseFloat(amount.value),
+        amount: signedAmount,
         category: categoryInput.value,
         date: dateInput.value
     };
@@ -156,15 +159,15 @@ function renderList() {
         const bg = isInc ? 'bg-green-50' : 'bg-red-50';
         
         const li = document.createElement('li');
-        li.className = 'flex justify-between items-center p-3 border rounded-xl hover:shadow-sm transition group';
+        li.className = 'flex justify-between items-center p-3 border border-white/10 rounded-xl hover:shadow-sm transition group';
         li.innerHTML = `
             <div class="flex items-center gap-3">
                 <div class="${bg} ${color} w-10 h-10 rounded-full flex items-center justify-center font-bold">
                     ${t.category.substring(0,2).toUpperCase()}
                 </div>
                 <div>
-                    <p class="font-bold text-gray-800">${t.text}</p>
-                    <p class="text-xs text-gray-500">${t.category} • ${t.date}</p>
+                    <p class="font-bold text-gray-100">${t.text}</p>
+                    <p class="text-xs text-gray-400">${t.category} • ${t.date}</p>
                 </div>
             </div>
             <div class="flex items-center gap-3">

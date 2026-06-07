@@ -34,7 +34,8 @@ function getFilteredData() {
     } else if (timeFilter === '365') {
         pastDate.setDate(now.getDate() - 365);
     }
-    return transactions.filter(t => new Date(t.date) >= pastDate);
+    // Filter by comparing dates in local timezone
+    return transactions.filter(t => new Date(t.date.replace(/-/g, '/')) >= pastDate);
 }
 
 function formatNumber(num) {

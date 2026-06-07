@@ -7,7 +7,7 @@ class Settings(BaseSettings):
     APP_VERSION: str = "1.0.0"
     DEBUG: bool = True
 
-    DATABASE_URL: str = "postgresql+asyncpg://postgres:password@localhost:5432/antigravity_db"
+    DATABASE_URL: str = "sqlite+aiosqlite:///./transactions.db"
 
     JWT_SECRET_KEY: str = "your-jwt-secret-key-change-this-in-production"
     JWT_ALGORITHM: str = "HS256"
@@ -19,6 +19,7 @@ class Settings(BaseSettings):
     class Config:
         env_file = ".env"
         case_sensitive = True
+        extra = "ignore"
 
 
 settings = Settings()
