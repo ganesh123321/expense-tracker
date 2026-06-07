@@ -36,6 +36,9 @@ async function fetchTransactions() {
         if (res.ok) {
             transactions = await res.json();
             renderApp();
+        } else if (res.status === 401) {
+            localStorage.removeItem('token');
+            window.location.href = 'login.html';
         }
     } catch (e) {
         console.error('Failed to fetch transactions', e);
@@ -99,6 +102,9 @@ async function addTransaction(e) {
             renderApp();
             showToast('Transaction added successfully!');
             text.value = ''; amount.value = ''; text.focus();
+        } else if (res.status === 401) {
+            localStorage.removeItem('token');
+            window.location.href = 'login.html';
         } else {
             showToast('Failed to add transaction', true);
         }
@@ -130,6 +136,9 @@ const confirmDelete = async () => {
             renderApp();
             showToast('Transaction deleted', true);
             closeDeleteModal();
+        } else if (res.status === 401) {
+            localStorage.removeItem('token');
+            window.location.href = 'login.html';
         } else {
             showToast('Failed to delete', true);
         }
